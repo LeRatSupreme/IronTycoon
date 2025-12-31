@@ -20,7 +20,7 @@ const Layout = ({ children }) => {
             {/* Optional: Top Bar for Brand */}
             {/* Optional: Top Bar for Brand */}
             <div className="fixed top-0 left-0 w-full z-30 p-4 flex justify-between items-start opacity-50 mix-blend-screen pointer-events-none">
-                <h1 className="text-[10px] font-bold tracking-[0.5em] text-user-accent uppercase writing-vertical-rl">IRON TYCOON v4.0</h1>
+                <h1 className="text-[10px] font-bold tracking-[0.5em] text-user-accent uppercase writing-vertical-rl">IRON TYCOON v0.5</h1>
             </div>
 
             <main className="p-4 max-w-md mx-auto min-h-screen pb-32">
