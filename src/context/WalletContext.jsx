@@ -173,12 +173,16 @@ export const WalletProvider = ({ children }) => {
             const daysDiff = differenceInDays(today, lastWorkout);
 
             if (daysDiff > 3) {
-                const penalty = daysDiff * 50;
+                // New Formula: 2% of Total Balance per day of inactivity
+                // Example: 10,000 WOL * 0.02 = 200 WOL/day * daysDiff
+                const dailyPenalty = Math.floor(user.balance * 0.02);
+                const penalty = Math.max(50, dailyPenalty * (daysDiff - 0)); // Minimum 50 to punish poor players too
+
                 const newBalance = Math.max(0, user.balance - penalty);
 
                 await db.user.update(user.id, {
                     balance: newBalance,
-                    lastWorkoutDate: new Date() // Reset inactivity timer so they don't get hit again immediately
+                    lastWorkoutDate: new Date() // Reset to avoid loop
                 });
 
                 setInactivityPenalty(penalty);

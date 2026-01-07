@@ -26,7 +26,8 @@
     "react-router-dom": "^6.21.3",
     "recharts": "^2.11.0",
     "tailwind-merge": "^2.2.1",
-    "use-sound": "^4.0.1"
+    "use-sound": "^4.0.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

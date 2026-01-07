@@ -9,31 +9,31 @@ export const ITEM_RARITIES = {
 export const ITEMS_CATALOG = [
     // COMMON (50%)
     { id: 1, name: "Shake Protéiné", cost: 150, type: "consumable", rarity: "COMMON", icon: "🥤" },
-    { id: 2, name: "Repos 15min", cost: 0, type: "activity", rarity: "COMMON", icon: "😴" }, // Free items can exist? Cost 0 might break logic, lets say cost 50
-    { id: 3, name: "Bouteille d'eau", cost: 200, type: "consumable", rarity: "COMMON", icon: "💧" },
-    { id: 4, name: "Playlist Boost", cost: 300, type: "bonus", rarity: "COMMON", icon: "🎵" },
-    { id: 5, name: "Café Noir", cost: 250, type: "consumable", rarity: "COMMON", icon: "☕" },
+    { id: 2, name: "Repos 15min", cost: 0, type: "activity", rarity: "COMMON", icon: "😴" },
+    { id: 3, name: "Bouteille d'eau", cost: 100, type: "consumable", rarity: "COMMON", icon: "💧" },
+    { id: 4, name: "Playlist Boost", cost: 150, type: "bonus", rarity: "COMMON", icon: "🎵" },
+    { id: 5, name: "Café Noir", cost: 150, type: "consumable", rarity: "COMMON", icon: "☕" },
 
     // UNCOMMON (30%)
-    { id: 10, name: "Barre Énergétique", cost: 500, type: "consumable", rarity: "UNCOMMON", icon: "🍫" },
-    { id: 11, name: "Straps de Tirage", cost: 1200, type: "equipment", rarity: "UNCOMMON", icon: "🧣" },
-    { id: 12, name: "Ceinture de Force", cost: 1500, type: "equipment", rarity: "UNCOMMON", icon: "🥋" },
+    { id: 10, name: "Barre Énergétique", cost: 300, type: "consumable", rarity: "UNCOMMON", icon: "🍫" },
+    { id: 11, name: "Straps de Tirage", cost: 450, type: "equipment", rarity: "UNCOMMON", icon: "🧣" },
+    { id: 12, name: "Ceinture de Force", cost: 450, type: "equipment", rarity: "UNCOMMON", icon: "🥋" },
     { id: 13, name: "Douche Chaude", cost: 400, type: "comfort", rarity: "UNCOMMON", icon: "🚿" },
 
     // RARE (15%)
-    { id: 20, name: "Séance Ciné", cost: 5000, type: "leisure", rarity: "RARE", icon: "🍿" },
-    { id: 21, name: "Cheat Meal", cost: 4000, type: "consumable", rarity: "RARE", icon: "🍔" },
-    { id: 22, name: "Massage Deep Tissue", cost: 6000, type: "recovery", rarity: "RARE", icon: "💆‍♂️" },
-    { id: 23, name: "Nouveaux Écouteurs", cost: 8000, type: "equipment", rarity: "RARE", icon: "🎧" },
+    { id: 20, name: "Séance Ciné", cost: 1200, type: "leisure", rarity: "RARE", icon: "🍿" },
+    { id: 21, name: "Fast Food (Cheat)", cost: 600, type: "consumable", rarity: "RARE", icon: "🍔" },
+    { id: 22, name: "Massage Deep Tissue", cost: 2000, type: "recovery", rarity: "RARE", icon: "💆‍♂️" },
+    { id: 23, name: "Nouveaux Écouteurs", cost: 1500, type: "equipment", rarity: "RARE", icon: "🎧" },
 
     // EPIC (4%)
-    { id: 30, name: "Resto Sushi à Volonté", cost: 15000, type: "leisure", rarity: "EPIC", icon: "🍣" },
-    { id: 31, name: "Nouveau T-shirt Tech", cost: 12000, type: "apparel", rarity: "EPIC", icon: "👕" },
-    { id: 32, name: "Soirée Casino (Vraie)", cost: 20000, type: "leisure", rarity: "EPIC", icon: "🎰" },
+    { id: 30, name: "Resto Luxe", cost: 3000, type: "leisure", rarity: "EPIC", icon: "🍣" },
+    { id: 31, name: "Nouveau T-shirt Tech", cost: 2500, type: "apparel", rarity: "EPIC", icon: "👕" },
+    { id: 32, name: "Soirée Casino", cost: 5000, type: "leisure", rarity: "EPIC", icon: "🎰" },
 
     // LEGENDARY (1%)
-    { id: 40, name: "Nouvelles Baskets Pro", cost: 50000, type: "apparel", rarity: "LEGENDARY", icon: "👟" },
-    { id: 41, name: "Console Next-Gen", cost: 100000, type: "leisure", rarity: "LEGENDARY", icon: "🎮" },
-    { id: 42, name: "Voyage Week-end", cost: 150000, type: "leisure", rarity: "LEGENDARY", icon: "✈️" },
-    { id: 43, name: "Home Gym Set", cost: 250000, type: "equipment", rarity: "LEGENDARY", icon: "🏋FO️" },
+    { id: 40, name: "Nouvelles Baskets Pro", cost: 8000, type: "apparel", rarity: "LEGENDARY", icon: "👟" },
+    { id: 41, name: "Console Next-Gen", cost: 20000, type: "leisure", rarity: "LEGENDARY", icon: "🎮" },
+    { id: 42, name: "Voyage Week-end", cost: 50000, type: "leisure", rarity: "LEGENDARY", icon: "✈️" },
+    { id: 43, name: "Home Gym Set", cost: 100000, type: "equipment", rarity: "LEGENDARY", icon: "🏋FO️" },
 ];

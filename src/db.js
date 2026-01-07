@@ -27,6 +27,19 @@ db.version(6).stores({
     stocks: 'ticker, currentPrice, lastWorkoutDate'
 });
 
+db.version(7).stores({
+    user: '++id, name, balance, totalEarned, currentRank, lastWorkoutDate, lifetimeEarnings, totalTonnage, avatarId, theme, ownedUpgrades',
+    exercises: '++id, name, category, multiplier, personalRecord',
+    workouts: '++id, date, duration, totalWOL, mood',
+    logs: '++id, exerciseId, weight, reps, date',
+    shop: '++id, name, cost, type, purchasedCount, icon',
+    blueprints: '++id, name, created_at, exercises',
+    daily_shop: 'id, lastRefresh, slots',
+    inventory: '++id, itemId, status, type, acquiredDate',
+    stocks: 'ticker, currentPrice, lastWorkoutDate',
+    contracts: 'id, type, status, weekId' // id is UUID
+});
+
 db.on('populate', async () => {
     // Initialize User
     await db.user.add({

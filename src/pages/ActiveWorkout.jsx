@@ -12,10 +12,13 @@ import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameButton from '../components/ui/GameButton';
 import DigitalDisplay from '../components/ui/DigitalDisplay';
+
 import { useMarketMaker } from '../hooks/useMarketMaker';
+import { useContractSystem } from '../hooks/useContractSystem';
 
 const ActiveWorkout = () => {
     const { addFunds, user, updateLastWorkout, globalMultiplier } = useWallet();
+    const { trackProgress } = useContractSystem();
     const navigate = useNavigate();
     const { triggerMarketPump } = useMarketMaker();
     const [elapsed, setElapsed] = useState(0);
@@ -73,17 +76,35 @@ const ActiveWorkout = () => {
         const isCardio = exo.category === 'cardio';
 
         if (isCardio) {
-            gain = (duration * 10) * exo.multiplier;
+            // New Formula: Minutes * 1.5
+            gain = duration * 1.5;
         } else {
-            gain = (w * r) * exo.multiplier;
+            // New Formula: (Weight * Reps) / 25
+            let baseScore = (w * r) / 25;
+
+            // Difficulty Multiplier
+            let difficultyMult = 1.0;
+            const name = exo.name.toLowerCase();
+
+            // Hard (Compound)
+            if (name.includes('squat') || name.includes('deadlift') || name.includes('bench')) {
+                difficultyMult = 1.5;
+            }
+            // Medium (Machines/Presses)
+            else if (name.includes('press') || name.includes('row') || name.includes('pull')) {
+                difficultyMult = 1.2;
+            }
+
+            gain = baseScore * difficultyMult * (exo.multiplier || 1); // Keep exo multiplier if any
+
             if (w > exo.personalRecord) {
                 isPR = true;
-                gain += 500;
+                gain += 50; // Reduced PR bonus
                 await db.exercises.update(exo.id, { personalRecord: w });
             }
         }
 
-        if (isPerfect) gain += 10;
+        if (isPerfect) gain *= 1.1; // +10% for perfect form instead of flat +10
 
         // GLOBAL MULTIPLIERS (Happy Hour + Gold Weights)
         let totalMultiplier = globalMultiplier;
@@ -91,7 +112,7 @@ const ActiveWorkout = () => {
             totalMultiplier *= 1.1; // +10%
         }
 
-        gain = gain * totalMultiplier;
+        gain = Math.max(1, Math.round(gain * totalMultiplier)); // Ensure at least 1 WOL
 
         await addFunds(gain);
         setSessionTotal(prev => prev + gain);
@@ -182,6 +203,12 @@ const ActiveWorkout = () => {
         if (bonus > 0) {
             await addFunds(bonus);
         }
+
+        // Update Corporate Contract
+        await trackProgress({
+            exercises: phase === 'guided' ? guidedBlueprintExercises : sessionExercises,
+            totalWOL: finalTotal
+        });
 
         await db.workouts.add({
             date: new Date(),

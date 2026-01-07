@@ -11,6 +11,7 @@ import { useMemo } from 'react';
 import HoloPanel from '../components/ui/HoloPanel';
 import DigitalDisplay from '../components/ui/DigitalDisplay';
 import GameButton from '../components/ui/GameButton';
+import ContractsPanel from '../components/ContractsPanel';
 import clsx from 'clsx';
 
 const Dashboard = () => {
@@ -137,6 +138,11 @@ const Dashboard = () => {
                             <span className="text-user-accent">+12.5%</span>
                         </div>
                     </HoloPanel>
+                </motion.div>
+
+                {/* CONTRACTS / QUESTS */}
+                <motion.div variants={itemVariants} className="col-span-2">
+                    <ContractsPanel />
                 </motion.div>
 
                 {/* 2. Quick Actions (Buttons) */}
