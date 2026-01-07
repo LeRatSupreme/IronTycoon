@@ -142,7 +142,7 @@ const Dashboard = () => {
                 {/* 2. Quick Actions (Buttons) */}
                 <motion.div variants={itemVariants} className="col-span-2 grid grid-cols-3 gap-3">
                     <Link to="/workout" className="col-span-2 group relative overflow-hidden rounded-2xl bg-gradient-to-br from-user-accent to-user-accent/80 p-1 shadow-lg shadow-user-accent/20">
-                        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay" />
+                        <div className="absolute inset-0 opacity-10 mix-blend-overlay bg-white" />
                         <div className="h-full bg-slate-900/10 backdrop-blur-sm rounded-xl p-5 flex flex-col justify-between relative overflow-hidden border border-white/10 group-hover:bg-transparent transition-colors">
                             <div className="absolute right-0 top-0 p-3 opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
                                 <Factory size={48} className="text-slate-900" />

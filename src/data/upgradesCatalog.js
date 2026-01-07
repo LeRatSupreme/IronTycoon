@@ -1,4 +1,3 @@
-
 import { Fan, Dumbbell, Server, Music } from 'lucide-react';
 
 export const INFRASTRUCTURES = [
@@ -7,7 +6,7 @@ export const INFRASTRUCTURES = [
         name: 'Ventilation High-Tech',
         price: 50000,
         description: 'Réduit les temps de repos de 10%.',
-        icon: Fan,
+        icon: Fan, // Passing component reference
         effectType: 'REST_REDUCTION',
         value: 0.90
     },

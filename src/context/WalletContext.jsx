@@ -178,6 +178,7 @@ export const WalletProvider = ({ children }) => {
 
                 await db.user.update(user.id, {
                     balance: newBalance,
+                    lastWorkoutDate: new Date() // Reset inactivity timer so they don't get hit again immediately
                 });
 
                 setInactivityPenalty(penalty);
@@ -192,9 +193,9 @@ export const WalletProvider = ({ children }) => {
     useEffect(() => {
         const theme = user?.theme || 'default';
         document.body.className = ''; // reset
-        if (theme === 'cyber') document.body.classList.add('theme-cyber');
-        if (theme === 'gold') document.body.classList.add('theme-gold');
-        // default uses root vars
+        if (theme !== 'default') {
+            document.body.classList.add(`theme-${theme}`);
+        }
     }, [user?.theme]);
 
     return (

@@ -20,7 +20,7 @@ const ToggleSwitch = ({ checked, onChange, label }) => (
 
 const SettingsPage = () => {
     const navigate = useNavigate();
-    const { user, resetData, exportData, importData, updateSettings, toggleHolidayMode } = useWallet();
+    const { user, resetData, exportData, importData, updateSettings, toggleHolidayMode, updateTheme } = useWallet();
     const fileInputRef = useRef(null);
 
     const handleImportClick = () => fileInputRef.current.click();
@@ -68,16 +68,27 @@ const SettingsPage = () => {
                             </h2>
                             <div className="space-y-4">
                                 <div className="p-3 bg-slate-900/50 rounded-xl border border-white/5">
-                                    <div className="flex justify-between mb-2">
-                                        <span className="text-sm font-bold text-gray-300 uppercase">Volume SFX</span>
-                                        <span className="text-xs font-mono text-user-accent">100%</span>
+                                    <div className="flex justify-between mb-3">
+                                        <span className="text-sm font-bold text-gray-300 uppercase">Interface Link</span>
                                     </div>
-                                    <input
-                                        type="range"
-                                        min="0" max="100"
-                                        className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-user-accent"
-                                        disabled // Placeholder implementation
-                                    />
+                                    <div className="flex gap-2 justify-between">
+                                        {[
+                                            { id: 'default', color: 'bg-emerald-400', label: 'ECO' },
+                                            { id: 'cyber', color: 'bg-fuchsia-500', label: 'NEO' },
+                                            { id: 'gold', color: 'bg-amber-400', label: 'LUX' },
+                                            { id: 'red', color: 'bg-rose-600', label: 'SITH' },
+                                            { id: 'blue', color: 'bg-sky-400', label: 'ICE' },
+                                        ].map(t => (
+                                            <button
+                                                key={t.id}
+                                                onClick={() => updateTheme(t.id)}
+                                                className={`flex-1 h-12 rounded-lg flex flex-col items-center justify-center gap-1 transition-all border-2 ${user?.theme === t.id || (!user?.theme && t.id === 'default') ? 'border-white scale-105 shadow-glow-accent' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                                            >
+                                                <div className={`w-3 h-3 rounded-full ${t.color}`} />
+                                                <span className="text-[8px] font-bold uppercase">{t.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                                 <ToggleSwitch
                                     label="Retour Haptique"

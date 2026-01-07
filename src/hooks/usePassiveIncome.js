@@ -1,56 +1,82 @@
-
-import { useEffect, useState } from 'react';
-import { db } from '../db';
-import { differenceInHours } from 'date-fns';
+import { useState, useEffect } from 'react';
 import { useWallet } from '../context/WalletContext';
+import { db } from '../db';
+import { INFRASTRUCTURES } from '../data/upgradesCatalog';
 
 export const usePassiveIncome = () => {
-    const { addFunds, user } = useWallet();
+    const { user, addFunds } = useWallet();
     const [passiveIncome, setPassiveIncome] = useState(0);
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const checkPassiveIncome = async () => {
-            const currentUser = await db.user.get(1); // Assuming single user ID 1
-            if (!currentUser || !currentUser.ownedUpgrades?.includes('MINING_RIG')) return;
+            if (!user) return;
 
-            // Last logged in simulation
-            // In a real app we'd track 'lastSessionEnd', but here we can use 'lastWorkoutDate' or a new field 'lastLogin' if we had one.
-            // Let's assume we update 'lastLogin' on close or periodically?
-            // For now, let's use a stored timestamp in local storage for simplicity as it's "session" based
+            // Check if user owns MINING_RIG
+            const upgrades = user.ownedUpgrades || [];
+            if (!upgrades.includes('MINING_RIG')) return;
 
-            const lastLoginStr = localStorage.getItem('lastLogin');
-            if (lastLoginStr) {
-                const lastLogin = new Date(lastLoginStr);
-                const now = new Date();
-                const hoursDiff = differenceInHours(now, lastLogin);
+            // Check last login (using lastWorkoutDate as proxy for now, or we should add lastLogin)
+            // Ideally we track lastAPPLogin separately but let's use lastWorkoutDate or a specific lastLogin if available.
+            // The prompt said "Calcule diff = Date.now() - user.lastLogin".
+            // Since I don't have lastLogin, I'll use lastWorkoutDate BUT updates to lastWorkoutDate only happen on finish.
+            // Actually, let's look at db.js... no lastLogin.
+            // I will use a local storage timestamp for "lastSessionEnd" or just use lastWorkoutDate?
+            // "lastWorkoutDate" might be too old if they just logged in yesterday but didn't workout.
+            // Let's stick effectively to "Time passed since last check".
 
-                if (hoursDiff > 0) {
-                    const effectiveHours = Math.min(hoursDiff, 24); // Cap at 24h
-                    const earned = effectiveHours * 100;
+            // To be safe and simple: I'll save a "lastPassiveCheck" in localStorage or use lastWorkoutDate.
+            // Let's check against lastWorkoutDate for simplicity as per request context, but request said "lastLogin".
+            // I will add a localStorage sync for "last_seen".
+
+            const lastSeenStr = localStorage.getItem('iron_tycoon_last_seen');
+            const now = Date.now();
+
+            if (lastSeenStr) {
+                const lastSeen = parseInt(lastSeenStr);
+                const diffMs = now - lastSeen;
+                const diffHours = diffMs / (1000 * 60 * 60);
+
+                if (diffHours > 0.1) { // Min 6 mins to trigger
+                    // Cap at 24h
+                    const effectiveHours = Math.min(diffHours, 24);
+                    const rig = INFRASTRUCTURES.find(u => u.id === 'MINING_RIG');
+                    const rate = rig ? rig.value : 100;
+
+                    const earned = Math.floor(effectiveHours * rate);
 
                     if (earned > 0) {
                         setPassiveIncome(earned);
                         setShowModal(true);
-                        addFunds(earned);
                     }
                 }
             }
 
-            // Update lastLogin now for next time
-            localStorage.setItem('lastLogin', new Date().toISOString());
+            // Update last seen
+            localStorage.setItem('iron_tycoon_last_seen', now.toString());
         };
 
         checkPassiveIncome();
 
-        // Update heartbeat
+        // Heartbeat to update last seen while app is open
         const interval = setInterval(() => {
-            localStorage.setItem('lastLogin', new Date().toISOString());
+            localStorage.setItem('iron_tycoon_last_seen', Date.now().toString());
         }, 60000);
 
         return () => clearInterval(interval);
 
-    }, []); // Run once on mount
+    }, [user]);
 
-    return { passiveIncome, showModal, closePassiveModal: () => setShowModal(false) };
+    const closePassiveModal = async () => {
+        if (passiveIncome > 0) {
+            await addFunds(passiveIncome);
+        }
+        setShowModal(false);
+    };
+
+    return {
+        passiveIncome,
+        showModal,
+        closePassiveModal
+    };
 };

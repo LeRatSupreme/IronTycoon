@@ -21,6 +21,18 @@
   --primary-glow: 245 158 11;
 }
 
+.theme-red {
+  --primary: 225 29 72;
+  /* Rose 600 */
+  --primary-glow: 244 63 94;
+}
+
+.theme-blue {
+  --primary: 56 189 248;
+  /* Sky 400 */
+  --primary-glow: 14 165 233;
+}
+
 body {
   background-color: #020617;
   color: #ffffff;

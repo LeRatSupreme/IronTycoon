@@ -1,125 +1,105 @@
-
-import { motion } from 'framer-motion';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db';
 import { INFRASTRUCTURES } from '../data/upgradesCatalog';
+import HoloPanel from './ui/HoloPanel';
+import GameButton from './ui/GameButton';
 import { useWallet } from '../context/WalletContext';
-import { Check, Lock, Hammer, Bolt } from 'lucide-react';
+import { db } from '../db';
+import { Lock, CheckCircle, Construction } from 'lucide-react';
 import useSound from 'use-sound';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 const InfrastructureTab = () => {
-    const { user, spendFunds } = useWallet();
-    const ownedUpgrades = useLiveQuery(() => db.user.get(user?.id || 1).then(u => u?.ownedUpgrades || []));
+    const { user, subtractFunds } = useWallet();
+    const [playConstruct] = useSound('/sounds/construct.mp3'); // We'll need this sound, or use generic
+    const [playCash] = useSound('/sounds/cash.mp3');
 
-    // Sounds
-    const [playConstruction] = useSound('/sounds/construction.mp3', { volume: 0.6 }); // Placeholder path
-    const [playError] = useSound('/sounds/ui_error.mp3', { volume: 0.5 });
+    // Live query for owned upgrades to ensure UI updates
+    const ownedUpgrades = useLiveQuery(() =>
+        db.user.get(user?.id || 0).then(u => u?.ownedUpgrades || [])
+        , [user?.id]);
 
-    const handlePurchase = async (item) => {
-        if (!user || user.balance < item.price) {
-            playError();
-            return;
-        }
+    const handleBuyUpgrade = async (upgrade) => {
+        if (!user) return;
+        if (ownedUpgrades?.includes(upgrade.id)) return;
 
-        const success = await spendFunds(item.price);
+        const success = await subtractFunds(upgrade.price);
         if (success) {
-            playConstruction();
-            // Update DB
-            await db.user.where('id').equals(user.id).modify(u => {
-                if (!u.ownedUpgrades) u.ownedUpgrades = [];
-                u.ownedUpgrades.push(item.id);
+            // Update User
+            const currentUpgrades = user.ownedUpgrades || [];
+            await db.user.update(user.id, {
+                ownedUpgrades: [...currentUpgrades, upgrade.id]
             });
+            playConstruct(); // Simulated sound
         }
     };
 
-    if (!ownedUpgrades) return <div className="p-4 text-center animate-pulse">CHARGEMENT DES PLANS...</div>;
+    if (!user) return null;
 
     return (
         <div className="space-y-4 pb-20">
-            <div className="bg-blue-900/20 border border-blue-500/30 p-4 rounded-xl text-xs font-mono text-blue-300 mb-6">
-                <div className="flex items-center gap-2 mb-2">
-                    <Bolt size={14} className="animate-pulse" />
-                    <span className="font-bold uppercase tracking-widest">Mode Architecte</span>
-                </div>
-                <p>Investissez dans des infrastructures durables pour maximiser votre production de $WOL.</p>
+            <div className="bg-slate-900/50 border border-user-accent/30 p-4 rounded-xl mb-6 relative overflow-hidden shadow-glow-accent">
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(var(--primary),0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(var(--primary),0.1)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
+                <h2 className="text-user-accent font-black uppercase text-xl italic tracking-tighter flex items-center gap-2 relative z-10">
+                    <Construction className="text-user-accent" /> Améliorations
+                </h2>
+                <p className="text-xs text-user-accent/60 font-mono relative z-10">INVESTISSEZ DANS DES ACTIFS DURABLES.</p>
             </div>
 
-            <div className="grid grid-cols-1 gap-4">
-                {INFRASTRUCTURES.map((item) => {
-                    const isOwned = ownedUpgrades.includes(item.id);
-                    const canAfford = user.balance >= item.price;
-                    const Icon = item.icon;
+            <div className="grid gap-4">
+                {INFRASTRUCTURES.map(upgrade => {
+                    const isOwned = ownedUpgrades?.includes(upgrade.id);
+                    const canAfford = user.balance >= upgrade.price;
+                    const Icon = upgrade.icon;
 
                     return (
-                        <motion.div
-                            key={item.id}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            whileHover={!isOwned && canAfford ? { scale: 1.02 } : {}}
+                        <HoloPanel
+                            key={upgrade.id}
+                            variant={isOwned ? "gold" : "default"}
                             className={clsx(
-                                "relative overflow-hidden rounded-xl border-2 p-4 transition-all",
+                                "relative p-4 rounded-xl border-2 transition-all overflow-hidden",
                                 isOwned
-                                    ? "bg-slate-900/80 border-gold/50 shadow-[0_0_15px_rgba(255,215,0,0.1)]"
-                                    : "bg-cyber-slate/50 border-white/10"
+                                    ? "bg-slate-900 border-gold shadow-[0_0_15px_rgba(251,191,36,0.2)]"
+                                    : "bg-slate-900/80 border-white/10"
                             )}
                         >
-                            {/* Blueprints Grid Background */}
-                            <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.05)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
+                            {/* Blueprints Grid Background for aesthetics */}
+                            <div className="absolute inset-0 opacity-5 pointer-events-none bg-[linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] bg-[size:10px_10px]" />
 
                             <div className="flex justify-between items-start relative z-10">
-                                <div className="flex items-start gap-4">
-                                    <div className={clsx(
-                                        "p-3 rounded-lg border",
-                                        isOwned
-                                            ? "bg-gold/10 border-gold text-gold"
-                                            : "bg-blue-500/10 border-blue-500/30 text-blue-400"
-                                    )}>
-                                        <Icon size={32} strokeWidth={1.5} />
+                                <div className="flex gap-4">
+                                    <div className={clsx("w-16 h-16 rounded-lg flex items-center justify-center border", isOwned ? "bg-gold/10 border-gold text-gold" : "bg-slate-800 border-white/10 text-gray-500")}>
+                                        <Icon size={32} />
                                     </div>
                                     <div>
-                                        <h3 className={clsx("font-black text-lg uppercase", isOwned ? "text-gold" : "text-white")}>
-                                            {item.name}
-                                        </h3>
-                                        <p className="text-xs text-gray-400 font-medium mt-1 max-w-[200px] leading-relaxed">
-                                            {item.description}
-                                        </p>
+                                        <h3 className={clsx("font-black uppercase text-lg", isOwned ? "text-gold" : "text-white")}>{upgrade.name}</h3>
+                                        <p className="text-xs text-gray-400 font-mono mb-2 max-w-[200px]">{upgrade.description}</p>
+
+                                        {!isOwned && (
+                                            <div className="text-sm font-bold font-mono text-neon-green">
+                                                ${upgrade.price.toLocaleString()}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-
-                                <div className="text-right">
-                                    {isOwned ? (
-                                        <div className="flex flex-col items-center gap-1">
-                                            <div className="bg-gold text-black text-[10px] font-black px-2 py-1 rounded border border-yellow-600 uppercase shadow-lg transform -rotate-6">
-                                                INSTALLÉ
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-col items-end">
-                                            <div className={clsx(
-                                                "text-xl font-black tabular-nums",
-                                                canAfford ? "text-neon-green" : "text-gray-500"
-                                            )}>
-                                                {item.price.toLocaleString()} <span className="text-xs text-gray-400">$WOL</span>
-                                            </div>
-                                            <button
-                                                onClick={() => handlePurchase(item)}
-                                                disabled={!canAfford}
-                                                className={clsx(
-                                                    "mt-2 px-4 py-2 rounded-lg font-black text-xs uppercase transition-all flex items-center gap-2",
-                                                    canAfford
-                                                        ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg tooltip-trigger"
-                                                        : "bg-gray-800 text-gray-500 cursor-not-allowed"
-                                                )}
-                                            >
-                                                {canAfford ? 'Construire' : <><Lock size={10} /> Verrouillé</>}
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
                             </div>
-                        </motion.div>
+
+                            <div className="relative z-10">
+                                {isOwned ? (
+                                    <div className="w-full py-2 bg-gold/10 border border-gold/30 text-gold font-black uppercase text-center rounded tracking-[0.2em] flex items-center justify-center gap-2 text-xs">
+                                        <CheckCircle size={14} /> INSTALLÉ
+                                    </div>
+                                ) : (
+                                    <GameButton
+                                        onClick={() => handleBuyUpgrade(upgrade)}
+                                        variant={canAfford ? "primary" : "secondary"}
+                                        disabled={!canAfford}
+                                        className="w-full text-xs"
+                                    >
+                                        {canAfford ? "INSTALLER" : "FONDS INSUFFISANTS"}
+                                    </GameButton>
+                                )}
+                            </div>
+                        </HoloPanel>
                     );
                 })}
             </div>

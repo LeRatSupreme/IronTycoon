@@ -16,7 +16,7 @@ db.version(5).stores({
 });
 
 db.version(6).stores({
-    user: '++id, name, balance, totalEarned, currentRank, lastWorkoutDate, lifetimeEarnings, totalTonnage, avatarId, theme, *ownedUpgrades', // *ownedUpgrades for multi-entry index if needed
+    user: '++id, name, balance, totalEarned, currentRank, lastWorkoutDate, lifetimeEarnings, totalTonnage, avatarId, theme, ownedUpgrades',
     exercises: '++id, name, category, multiplier, personalRecord',
     workouts: '++id, date, duration, totalWOL, mood',
     logs: '++id, exerciseId, weight, reps, date',

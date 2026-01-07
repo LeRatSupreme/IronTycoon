@@ -177,6 +177,12 @@ const ActiveWorkout = () => {
     };
 
     const finalize = async (finalTotal) => {
+        // Credit any bonus from Finisher (finalTotal > sessionTotal)
+        const bonus = finalTotal - sessionTotal;
+        if (bonus > 0) {
+            await addFunds(bonus);
+        }
+
         await db.workouts.add({
             date: new Date(),
             duration: 0,

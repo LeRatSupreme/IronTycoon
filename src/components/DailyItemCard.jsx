@@ -42,7 +42,7 @@ const DailyItemCard = ({ item, onBuy, canAfford, isShake }) => {
 
                 {item.soldOut ? (
                     <div className="bg-red-900/10 border border-red-900 text-red-700 font-black text-center py-2 rounded uppercase tracking-widest text-xs">
-                        SOLD OUT
+                        ÉPUISÉ
                     </div>
                 ) : (
                     <GameButton
@@ -61,7 +61,7 @@ const DailyItemCard = ({ item, onBuy, canAfford, isShake }) => {
             {item.soldOut && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
                     <div className="border-4 border-red-600 text-red-600 font-black text-2xl uppercase p-2 rotate-[-20deg] opacity-80 mask-grunge">
-                        SOLD
+                        VENDU
                     </div>
                 </div>
             )}
